@@ -12,18 +12,21 @@ export 'support/code_country.dart';
 export 'country_selection_theme.dart';
 
 class CountryListPick extends StatefulWidget {
-  CountryListPick(
-      {this.onChanged,
-      this.initialSelection,
-      this.appBar,
-      this.pickerBuilder,
-      this.countryBuilder,
-      this.theme,
-      this.useUiOverlay = true,
-      this.useSafeArea = false,
-      this.rootNavigator = false});
+  CountryListPick({
+    this.onChanged,
+    this.initialSelection,
+    this.selectedItem,
+    this.appBar,
+    this.pickerBuilder,
+    this.countryBuilder,
+    this.theme,
+    this.useUiOverlay = true,
+    this.useSafeArea = false,
+    this.rootNavigator = false,
+  });
 
   final String? initialSelection;
+  final CountryCode? selectedItem;
   final ValueChanged<CountryCode?>? onChanged;
   final PreferredSizeWidget? appBar;
   final Widget Function(BuildContext context, CountryCode? countryCode)?
@@ -60,7 +63,24 @@ class _CountryListPickState extends State<CountryListPick> {
 
   @override
   void initState() {
-    if (widget.initialSelection != null) {
+    _updateSelectedItem();
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(CountryListPick oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedItem != oldWidget.selectedItem) {
+      _updateSelectedItem();
+    }
+  }
+
+  void _updateSelectedItem() {
+    if (widget.selectedItem != null) {
+      selectedItem = widget.selectedItem;
+    }
+
+    else if (widget.initialSelection != null) {
       selectedItem = elements.firstWhere(
           (e) =>
               (e.code.toUpperCase() ==
@@ -70,8 +90,6 @@ class _CountryListPickState extends State<CountryListPick> {
     } else {
       selectedItem = elements[0];
     }
-
-    super.initState();
   }
 
   void _awaitFromSelectScreen(BuildContext context, PreferredSizeWidget? appBar,
